@@ -9,10 +9,14 @@ export const initialContainerState = [
   },
   {
     id: 2,
-    items: [],
+    items: [
+      { id: 4, text: 'Item 4' },
+    ],
   },
   {
     id: 3,
-    items: [],
+    items: [
+      { id: 5, text: 'Item 5' },
+    ],
   },
 ]

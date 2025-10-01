@@ -15,7 +15,7 @@ export function DroppableContainer(props: IProps) {
   const { setNodeRef } = useDroppable({ id });
 
   return (
-    <div className={'droppable-container'}>
+    <div ref={setNodeRef} className={'droppable-container'}>
       <SortableContext items={items} strategy={rectSortingStrategy}>
         {items.map((item) => (
           <Item

@@ -10,54 +10,154 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 import { DroppableContainer } from './DroppableContainer';
-import { getItemPosition } from './utilities/dragAndDropUtils';
 import Button from '@mui/material/Button';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import CheckIcon from '@mui/icons-material/Check';
 import { Container } from '../../types/dragndrop/types';
 import { initialContainerState } from './utilities/dragAndDropConstants';
+import { findContainerId } from './utilities/dragAndDropUtils';
+import { Box } from '@mui/material';
+import { arrayMove } from '@dnd-kit/sortable';
 
 export function DragAndDropComponent() {
-  const [containers, setContainers] = useState<Container[]>(initialContainerState);
+  const [containers, setContainers] = useState<Container[]>(
+    initialContainerState
+  );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [currentContainerId, setCurrentContainerId] =
     useState<UniqueIdentifier | null>(null);
 
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const [items, setItems] = useState([
-    { id: 1, text: 'Item 1' },
-    { id: 2, text: 'Item 2' },
-    { id: 3, text: 'Item 3' },
-    { id: 4, text: 'Item 4' },
-    { id: 5, text: 'Item 5' },
-  ]);
-
   const [canDrag, setCanDrag] = useState(false);
 
   function handleDragStart(event: DragMoveEvent) {
-    /* empty */
+    setActiveId(event.active.id);
   }
 
   function handleDragOver(event: DragOverEvent) {
-    /* empty */
+    const { active, over } = event;
+
+    if (!over) {
+      return;
+    }
+
+    const activeId = active.id;
+    const overId = over.id;
+    const activeContainerId = findContainerId(containers, activeId);
+    const overContainerId = findContainerId(containers, overId);
+
+    // Only proceed if moving between different containers
+    if (!activeContainerId || !overContainerId || activeContainerId === overContainerId) {
+      return;
+    }
+
+    setContainers((prevState) => {
+      // Find the container we are dragging from
+      const activeContainer = prevState.find(
+        (container) => container.id === activeContainerId
+      );
+      // Find the container we are dragging to
+      const overContainer = prevState.find(
+        (container) => container.id === overContainerId
+      );
+
+      if (!activeContainer || !overContainer) return prevState;
+
+      // Find the item we are dragging
+      const activeItem = activeContainer.items.find(
+        (item) => item.id === activeId
+      );
+      if (!activeItem) return prevState;
+
+      // Remove the item from the source container
+      const newActiveContainer = {
+        ...activeContainer,
+        items: activeContainer.items.filter((item) => item.id !== activeId),
+      };
+
+      // Insert the item into the target container at the correct position
+      const overItemIndex = overContainer.items.findIndex((item) => item.id === overId);
+      let newItems;
+      if (overItemIndex === -1) {
+        // If not over an item, add to the end
+        newItems = [...overContainer.items, activeItem];
+      } else {
+        // Insert after the hovered item
+        newItems = [
+          ...overContainer.items.slice(0, overItemIndex + 1),
+          activeItem,
+          ...overContainer.items.slice(overItemIndex + 1),
+        ];
+      }
+      const newOverContainer = {
+        ...overContainer,
+        items: newItems,
+      };
+
+      // Return updated containers
+      return prevState.map((container) => {
+        if (container.id === activeContainerId) return newActiveContainer;
+        if (container.id === overContainerId) return newOverContainer;
+        return container;
+      });
+    });
   }
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
-    if (active.id === over?.id) {
+    if (!over) {
+      setActiveId(null);
       return;
     }
 
-    setItems((items) => {
-      const currentPosition = getItemPosition(active.id as number, items);
-      const newPosition = getItemPosition(over?.id as number, items);
+    const activeId = active.id;
+    const overId = over.id;
+    const activeContainerId = findContainerId(containers, activeId);
+    const overContainerId = findContainerId(containers, overId);
 
-      return arrayMove(items, currentPosition, newPosition);
-    });
+    /// we don't want to do anything if we are not over a container
+    if (!activeContainerId || !overContainerId) {
+      setActiveId(null);
+      return;
+    }
+
+    if (activeContainerId === overContainerId && activeId !== overId) {
+      const containerIndex = containers.findIndex(
+        (container) => container.id === activeContainerId
+      );
+
+      if (containerIndex === -1) {
+        setActiveId(null);
+        return;
+      }
+
+      const container = containers[containerIndex];
+      const activeIndex = container.items.findIndex(
+        (item) => item.id === activeId
+      );
+      const overIndex = container.items.findIndex((item) => item.id === overId);
+
+      if (activeIndex !== -1 && overIndex !== -1) {
+        const newItems = arrayMove(container.items, activeIndex, overIndex);
+
+        setContainers((containers) => {
+          return containers.map((container, index) => {
+            if (index === containerIndex) {
+              return {
+                ...container,
+                items: newItems,
+              };
+            }
+            return container;
+          });
+        });
+      }
+    }
+
+    setActiveId(null);
   }
 
   function toggleCanDrag() {
@@ -81,19 +181,18 @@ export function DragAndDropComponent() {
         collisionDetection={closestCorners}
         sensors={sensors}
       >
-        <SortableContext items={containers.map((container) => container.id)}>
-          {/*{containers.map((container) => {*/}
-          {/*  return(*/}
-          {/*    <DroppableContainer*/}
-          {/*      key={container.id}*/}
-          {/*      id={container.id}*/}
-          {/*      items={items}*/}
-          {/*      canDrag={canDrag}*/}
-          {/*    />*/}
-          {/*  )*/}
-          {/*})}*/}
-          <DroppableContainer items={items} id={1} canDrag={canDrag} />
-        </SortableContext>
+        <Box sx={{ display: 'flex', gap: '1rem' }}>
+          {containers.map((container) => {
+            return (
+              <DroppableContainer
+                key={container.id}
+                id={container.id}
+                items={container.items}
+                canDrag={canDrag}
+              />
+            );
+          })}
+        </Box>
       </DndContext>
     </>
   );
