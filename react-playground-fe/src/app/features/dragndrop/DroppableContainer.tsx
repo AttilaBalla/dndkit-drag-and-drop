@@ -1,12 +1,12 @@
 import { PropsWithChildren } from 'react';
 import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
 import { Item } from './Item';
-import { DragOverlay, useDroppable } from '@dnd-kit/core';
+import { UniqueIdentifier, useDroppable } from '@dnd-kit/core';
 import { Box } from '@mui/material';
 
 interface IProps extends PropsWithChildren {
-  id: number;
-  items: Array<{ id: number; text: string }>;
+  id: UniqueIdentifier;
+  items: Array<{ id: UniqueIdentifier; text: string }>;
   canDrag: boolean;
 }
 

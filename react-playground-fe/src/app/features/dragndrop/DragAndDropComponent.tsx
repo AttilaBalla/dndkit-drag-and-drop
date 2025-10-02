@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import {
   closestCorners,
   DndContext,
@@ -20,7 +20,11 @@ import { findContainerId } from './utilities/dragAndDropUtils';
 import { Box } from '@mui/material';
 import { arrayMove } from '@dnd-kit/sortable';
 
-export function DragAndDropComponent() {
+interface IProps {
+  items: Array<{ containerId: UniqueIdentifier; component: ReactNode }>;
+}
+
+export function DragAndDropComponent(props: IProps) {
   const [containers, setContainers] = useState<Container[]>(
     initialContainerState
   );

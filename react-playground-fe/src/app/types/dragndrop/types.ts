@@ -9,21 +9,12 @@ export interface ActionProps extends React.HTMLAttributes<HTMLButtonElement> {
   cursor?: CSSProperties['cursor'];
 }
 
-export type DraggableType = {
-  id: UniqueIdentifier;
-  title: string;
-  items: {
-    id: UniqueIdentifier;
-    title: string;
-  }
-}
-
 export interface Item {
-  id: number;
+  id: UniqueIdentifier;
   text: string;
 }
 
 export interface Container {
-  id: number;
+  id: UniqueIdentifier;
   items: Item[];
 }

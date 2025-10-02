@@ -12,3 +12,7 @@ export function findContainerId(
     container.items.some((item) => item.id === itemId)
   )?.id;
 }
+
+export function constructInitialState() {
+
+}
