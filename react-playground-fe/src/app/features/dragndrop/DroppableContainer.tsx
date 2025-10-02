@@ -3,10 +3,11 @@ import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
 import { Item } from './Item';
 import { UniqueIdentifier, useDroppable } from '@dnd-kit/core';
 import { Box } from '@mui/material';
+import { DragAndDropItem } from '../../types/dragndrop/types';
 
 interface IProps extends PropsWithChildren {
   id: UniqueIdentifier;
-  items: Array<{ id: UniqueIdentifier; text: string }>;
+  items: DragAndDropItem[];
   canDrag: boolean;
 }
 
@@ -29,7 +30,7 @@ export function DroppableContainer(props: IProps) {
         {items.map((item) => (
           <Item
             id={item.id}
-            text={item.text}
+            component={item.component}
             canDrag={canDrag}
             key={item.id}
           ></Item>

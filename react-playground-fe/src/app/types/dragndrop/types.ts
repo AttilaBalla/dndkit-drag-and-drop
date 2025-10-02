@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { UniqueIdentifier } from '@dnd-kit/core';
 
 export interface ActionProps extends React.HTMLAttributes<HTMLButtonElement> {
@@ -9,12 +9,12 @@ export interface ActionProps extends React.HTMLAttributes<HTMLButtonElement> {
   cursor?: CSSProperties['cursor'];
 }
 
-export interface Item {
+export interface DragAndDropItem {
   id: UniqueIdentifier;
-  text: string;
+  component: ReactNode
 }
 
-export interface Container {
+export interface DragAndDropContainer {
   id: UniqueIdentifier;
-  items: Item[];
+  items: DragAndDropItem[];
 }

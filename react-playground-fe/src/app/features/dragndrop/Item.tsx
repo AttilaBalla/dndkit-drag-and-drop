@@ -1,19 +1,19 @@
-import { Paper, Typography, useTheme } from '@mui/material';
+import { Paper, useTheme } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { ItemHandle } from './ItemHandle';
 import { UniqueIdentifier } from '@dnd-kit/core';
 
 interface IProps {
   id: UniqueIdentifier;
-  text: string;
+  component: ReactNode;
   canDrag: boolean;
 }
 
 export function Item(props: IProps) {
   const theme = useTheme();
-  const { id, text, canDrag } = props;
+  const { id, component, canDrag } = props;
   const sortableHandler = useSortable({ id });
 
   const sortableTransitionStyle: React.CSSProperties = {
@@ -32,7 +32,7 @@ export function Item(props: IProps) {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: '4rem',
+        minHeight: '5rem',
         padding: '1rem',
         marginTop: '.5rem',
         marginBottom: '.5rem',
@@ -41,8 +41,10 @@ export function Item(props: IProps) {
         width: '100%', // Ensures item matches container width
       }}
     >
-      <Typography>{text}</Typography>
-      {canDrag ? <ItemHandle listeners={{...sortableHandler.listeners}} /> : null}
+      {component}
+      {canDrag ? (
+        <ItemHandle listeners={{ ...sortableHandler.listeners }} />
+      ) : null}
     </Paper>
   );
 }

@@ -14,9 +14,11 @@ import { DroppableContainer } from './DroppableContainer';
 import Button from '@mui/material/Button';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import CheckIcon from '@mui/icons-material/Check';
-import { Container } from '../../types/dragndrop/types';
-import { initialContainerState } from './utilities/dragAndDropConstants';
-import { findContainerId } from './utilities/dragAndDropUtils';
+import { DragAndDropContainer } from '../../types/dragndrop/types';
+import {
+  constructInitialState,
+  findContainerId,
+} from './utilities/dragAndDropUtils';
 import { Box } from '@mui/material';
 import { arrayMove } from '@dnd-kit/sortable';
 
@@ -25,8 +27,8 @@ interface IProps {
 }
 
 export function DragAndDropComponent(props: IProps) {
-  const [containers, setContainers] = useState<Container[]>(
-    initialContainerState
+  const [containers, setContainers] = useState<DragAndDropContainer[]>(
+    constructInitialState(props.items)
   );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
