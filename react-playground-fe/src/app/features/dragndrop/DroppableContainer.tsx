@@ -1,7 +1,8 @@
 import { PropsWithChildren } from 'react';
 import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
 import { Item } from './Item';
-import { useDroppable } from '@dnd-kit/core';
+import { DragOverlay, useDroppable } from '@dnd-kit/core';
+import { Box } from '@mui/material';
 
 interface IProps extends PropsWithChildren {
   id: number;
@@ -15,7 +16,15 @@ export function DroppableContainer(props: IProps) {
   const { setNodeRef } = useDroppable({ id });
 
   return (
-    <div ref={setNodeRef} className={'droppable-container'}>
+    <Box ref={setNodeRef}
+      sx={{
+        flex: 1,
+        border: '1px solid lightgrey',
+        borderRadius: '4px',
+        padding: '.5rem',
+        boxSizing: 'border-box'
+      }}
+    >
       <SortableContext items={items} strategy={rectSortingStrategy}>
         {items.map((item) => (
           <Item
@@ -26,6 +35,6 @@ export function DroppableContainer(props: IProps) {
           ></Item>
         ))}
       </SortableContext>
-    </div>
+    </Box>
   );
 }

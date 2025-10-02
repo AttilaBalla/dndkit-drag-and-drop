@@ -25,10 +25,13 @@ export function DragAndDropComponent() {
     initialContainerState
   );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const [currentContainerId, setCurrentContainerId] =
-    useState<UniqueIdentifier | null>(null);
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(useSensor(PointerSensor, {
+    activationConstraint: {
+      delay: 10, // small delay to prevent accidental drags
+      tolerance: 5
+    }
+  }));
 
   const [canDrag, setCanDrag] = useState(false);
 
@@ -106,6 +109,7 @@ export function DragAndDropComponent() {
   }
 
   function handleDragEnd(event: DragEndEvent) {
+    setActiveId(null);
     const { active, over } = event;
 
     if (!over) {
@@ -160,6 +164,10 @@ export function DragAndDropComponent() {
     setActiveId(null);
   }
 
+  function handleDragCancel() {
+    setActiveId(null);
+  }
+
   function toggleCanDrag() {
     setCanDrag(!canDrag);
   }
@@ -178,10 +186,17 @@ export function DragAndDropComponent() {
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
         collisionDetection={closestCorners}
         sensors={sensors}
       >
-        <Box sx={{ display: 'flex', gap: '1rem' }}>
+        <Box sx={{
+          width: '100%',
+          display: 'flex',
+          gap: '1rem',
+          boxSizing: 'border-box',
+          marginTop: '1rem'
+        }}>
           {containers.map((container) => {
             return (
               <DroppableContainer
