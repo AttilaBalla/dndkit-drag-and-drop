@@ -20,7 +20,7 @@ export function DroppableContainer(props: IProps) {
     <Box ref={setNodeRef}
       sx={{
         flex: 1,
-        border: '1px solid lightgrey',
+        border: canDrag ? '1px solid blue' : '1px solid lightgrey',
         borderRadius: '4px',
         padding: '.5rem',
         boxSizing: 'border-box'
