@@ -1,4 +1,4 @@
-import { PatternBuilderComponent } from '../features/patternbuilder/PatternBuilderComponent';
+import { PatternBuilderComponent } from '../features/patternbuilder/components/PatternBuilderComponent';
 
 export function PatternBuilderPage() {
   return(
