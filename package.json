@@ -62,6 +62,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
+    "@tanstack/react-router": "^1.132.47",
     "axios": "^1.12.2",
     "express": "^4.21.2",
     "react": "19.0.0",

@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from 'react';
+import React, { CSSProperties, ReactNode } from 'react';
 import { UniqueIdentifier } from '@dnd-kit/core';
 
 export interface ActionProps extends React.HTMLAttributes<HTMLButtonElement> {
@@ -16,5 +16,6 @@ export interface DragAndDropItem {
 
 export interface DragAndDropContainer {
   id: UniqueIdentifier;
+  ratio: number;
   items: DragAndDropItem[];
 }
