@@ -1,7 +1,8 @@
 import { UniqueIdentifier } from '@dnd-kit/core';
-import { DragAndDropContainer } from '../../../types/dragndrop/types';
-import { ExampleComponent } from '../../../common/ExampleComponent';
-import { IconButtonComponent } from '../../../common/IconButtonComponent';
+import {
+  DragAndDropComponentList,
+  DragAndDropContainer,
+} from '../../../types/dragndrop/types';
 
 export function findContainerId(
   containers: DragAndDropContainer[],
@@ -15,80 +16,30 @@ export function findContainerId(
   )?.id;
 }
 
-export const containerLayouts: { [key: string]: DragAndDropContainer[] } = {
-  '1-1-1': [
-    {
-      id: '1',
-      ratio: 1,
-      items: [
-        {
-          id: 100,
-          component: <ExampleComponent text={'some text here'} />,
-        },
-        {
-          id: 101,
-          component: <ExampleComponent text={'this is another one'} />,
-        },
-        {
-          id: 102,
-          component: (
-            <ExampleComponent
-              text={
-                'some more stuff with a lot of text that should make this one bigger theoretically but also for sure..Look at me Im bigger than the others! Who wants only fixed height components here, right?'
-              }
-            />
-          ),
-        },
-      ],
-    },
-    {
-      id: '2',
-      ratio: 1,
-      items: [
-        {
-          id: 200,
-          component: <ExampleComponent text={'figure out how this works'} />,
-        },
-        {
-          id: 201,
-          component: <ExampleComponent text={'with any component inside'} />,
-        },
-        { id: 202, component: <IconButtonComponent /> },
-      ],
-    },
-    {
-      id: '3',
-      ratio: 1,
-      items: [],
-    },
-  ],
-  '2-1-2': [
-    {
-      id: '1',
-      ratio: 2,
-      items: [],
-    },
-    {
-      id: '2',
-      ratio: 1,
-      items: [],
-    },
-    {
-      id: '3',
-      ratio: 2,
-      items: [],
-    },
-  ],
-  '2-4': [
-    {
-      id: '1',
-      ratio: 2,
-      items: [],
-    },
-    {
-      id: '2',
-      ratio: 4,
-      items: [],
-    },
-  ],
-};
+export function createInitialLayout(layout: number[]): DragAndDropContainer[] {
+  return layout.map((ratio, idx) => ({
+    id: idx + 1, // can't start IDs from 0, because 0 is falsy
+    items: [],
+    ratio,
+  }));
+}
+
+export function createLayoutWithComponents(
+  layout: number[],
+  components: DragAndDropComponentList[]
+): DragAndDropContainer[] {
+  const containers = createInitialLayout(layout);
+
+  for (const item of components) {
+    const container = containers.find(c => c.id === item.containerId);
+    if (!container) {
+      throw new Error(`Container with id ${item.containerId} does not exist in layout`);
+    }
+    container.items.push({
+      id: crypto.randomUUID(),
+      component: item.component
+    });
+  }
+
+  return containers;
+}

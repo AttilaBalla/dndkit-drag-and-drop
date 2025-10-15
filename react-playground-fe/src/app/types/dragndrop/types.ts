@@ -19,3 +19,14 @@ export interface DragAndDropContainer {
   ratio: number;
   items: DragAndDropItem[];
 }
+
+export interface DragAndDropComponentList {
+  containerId: UniqueIdentifier, component: ReactNode
+}
+
+export const DragAndDropContainerLayouts = {
+  oneToOne: [1, 1],
+  oneToTwo: [1, 2],
+  twoToOne: [2, 1],
+  tripleOne: [1, 1, 1]
+}

@@ -11,24 +11,31 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { DroppableContainer } from './DroppableContainer';
-import { DragAndDropContainer } from '../../../types/dragndrop/types';
+import {
+  DragAndDropComponentList,
+  DragAndDropContainer,
+  DragAndDropContainerLayouts,
+} from '../../../types/dragndrop/types';
 import { Box, Stack } from '@mui/material';
 import { arrayMove } from '@dnd-kit/sortable';
 import Button from '@mui/material/Button';
 import {
-  containerLayouts,
+  createInitialLayout,
+  createLayoutWithComponents,
   findContainerId,
 } from '../utilities/dragAndDropUtils';
 
 interface IProps {
   canChangeLayout: boolean;
+  components: DragAndDropComponentList[];
+  layout: number[];
 }
 
 export function DragAndDropComponent(props: IProps) {
-  const { canChangeLayout } = props;
+  const { canChangeLayout, components, layout } = props;
 
   const [containers, setContainers] = useState<DragAndDropContainer[]>(
-    containerLayouts['1-1-1']
+    createLayoutWithComponents(layout, components)
   );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
@@ -41,8 +48,9 @@ export function DragAndDropComponent(props: IProps) {
     })
   );
 
-  function toggleLayoutPreset(layout: string) {
-    const newContainerLayout = containerLayouts[layout];
+  function toggleLayoutPreset(layout: number[]) {
+    console.log('changing layout')
+    const newContainerLayout = createInitialLayout(layout)
 
     if (newContainerLayout.length !== containers.length) {
       // If the number of containers is changing, we need to redistribute items
@@ -224,16 +232,16 @@ export function DragAndDropComponent(props: IProps) {
             variant="contained"
             color={'primary'}
             onClick={() => {
-              toggleLayoutPreset('2-4');
+              toggleLayoutPreset(DragAndDropContainerLayouts.oneToTwo);
             }}
           >
-            2/4
+            1/2
           </Button>
           <Button
             variant="contained"
             color={'primary'}
             onClick={() => {
-              toggleLayoutPreset('1-1-1');
+              toggleLayoutPreset(DragAndDropContainerLayouts.tripleOne);
             }}
           >
             1/1/1
@@ -242,10 +250,19 @@ export function DragAndDropComponent(props: IProps) {
             variant="contained"
             color={'primary'}
             onClick={() => {
-              toggleLayoutPreset('2-1-2');
+              toggleLayoutPreset(DragAndDropContainerLayouts.oneToOne);
             }}
           >
-            2/1/2
+            1/1
+          </Button>
+          <Button
+            variant="contained"
+            color={'primary'}
+            onClick={() => {
+              toggleLayoutPreset(DragAndDropContainerLayouts.twoToOne);
+            }}
+          >
+            2/1
           </Button>
         </Stack>
       ) : null}
