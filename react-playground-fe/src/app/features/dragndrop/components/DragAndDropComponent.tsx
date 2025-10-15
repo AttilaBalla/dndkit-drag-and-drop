@@ -11,21 +11,24 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { DroppableContainer } from './DroppableContainer';
-import { DragAndDropContainer } from '../../types/dragndrop/types';
-import { findContainerId } from './utilities/dragAndDropUtils';
-import { Box } from '@mui/material';
+import { DragAndDropContainer } from '../../../types/dragndrop/types';
+import { Box, Stack } from '@mui/material';
 import { arrayMove } from '@dnd-kit/sortable';
+import Button from '@mui/material/Button';
+import {
+  containerLayouts,
+  findContainerId,
+} from '../utilities/dragAndDropUtils';
 
 interface IProps {
   canChangeLayout: boolean;
-  containers: DragAndDropContainer[];
 }
 
 export function DragAndDropComponent(props: IProps) {
   const { canChangeLayout } = props;
 
   const [containers, setContainers] = useState<DragAndDropContainer[]>(
-    props.containers
+    containerLayouts['1-1-1']
   );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
@@ -37,6 +40,42 @@ export function DragAndDropComponent(props: IProps) {
       },
     })
   );
+
+  function toggleLayoutPreset(layout: string) {
+    const newContainerLayout = containerLayouts[layout];
+
+    if (newContainerLayout.length !== containers.length) {
+      // If the number of containers is changing, we need to redistribute items
+      const allItems = containers.flatMap((container) => container.items);
+      const itemsPerContainer = Math.floor(
+        allItems.length / newContainerLayout.length
+      );
+      const updatedContainers = newContainerLayout.map(
+        (newContainer, index) => {
+          const startIdx = index * itemsPerContainer;
+          const endIdx =
+            index === newContainerLayout.length - 1
+              ? allItems.length
+              : startIdx + itemsPerContainer;
+          return {
+            ...newContainer,
+            items: allItems.slice(startIdx, endIdx),
+          };
+        }
+      );
+      setContainers(updatedContainers);
+    } else {
+      const updatedContainers = newContainerLayout.map(
+        (newContainer: DragAndDropContainer, index: number) => {
+          return {
+            ...newContainer,
+            items: containers[index] ? containers[index].items : [],
+          };
+        }
+      );
+      setContainers(updatedContainers);
+    }
+  }
 
   function handleDragStart(event: DragMoveEvent) {
     setActiveId(event.active.id);
@@ -178,35 +217,68 @@ export function DragAndDropComponent(props: IProps) {
   }
 
   return (
-    <DndContext
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
-      collisionDetection={closestCorners}
-      sensors={sensors}
-    >
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          gap: '1rem',
-          boxSizing: 'border-box',
-          marginTop: '1rem',
-        }}
+    <>
+      {canChangeLayout ? (
+        <Stack direction="row" spacing={2} sx={{ marginTop: '1rem' }}>
+          <Button
+            variant="contained"
+            color={'primary'}
+            onClick={() => {
+              toggleLayoutPreset('2-4');
+            }}
+          >
+            2/4
+          </Button>
+          <Button
+            variant="contained"
+            color={'primary'}
+            onClick={() => {
+              toggleLayoutPreset('1-1-1');
+            }}
+          >
+            1/1/1
+          </Button>
+          <Button
+            variant="contained"
+            color={'primary'}
+            onClick={() => {
+              toggleLayoutPreset('2-1-2');
+            }}
+          >
+            2/1/2
+          </Button>
+        </Stack>
+      ) : null}
+      <DndContext
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+        collisionDetection={closestCorners}
+        sensors={sensors}
       >
-        {containers.map((container) => {
-          return (
-            <DroppableContainer
-              key={container.id}
-              id={container.id}
-              items={container.items}
-              ratio={container.ratio}
-              canDrag={canChangeLayout}
-            />
-          );
-        })}
-      </Box>
-    </DndContext>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            gap: '1rem',
+            boxSizing: 'border-box',
+            marginTop: '1rem',
+          }}
+        >
+          {containers.map((container) => {
+            return (
+              <DroppableContainer
+                key={container.id}
+                id={container.id}
+                items={container.items}
+                ratio={container.ratio}
+                canDrag={canChangeLayout}
+              />
+            );
+          })}
+        </Box>
+      </DndContext>
+    </>
   );
 }

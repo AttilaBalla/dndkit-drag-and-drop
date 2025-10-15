@@ -3,7 +3,7 @@ import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable';
 import { Item } from './Item';
 import { UniqueIdentifier, useDroppable } from '@dnd-kit/core';
 import { Box } from '@mui/material';
-import { DragAndDropItem } from '../../types/dragndrop/types';
+import { DragAndDropItem } from '../../../types/dragndrop/types';
 
 interface IProps extends PropsWithChildren {
   id: UniqueIdentifier;

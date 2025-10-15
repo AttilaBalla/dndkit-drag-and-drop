@@ -1,7 +1,7 @@
-import { PatternBuilderComponent } from '../features/patternbuilder/components/PatternBuilderComponent';
+import { PatternBuilder } from '../features/patternbuilder/components/PatternBuilder';
 
 export function PatternBuilderPage() {
   return(
-    <PatternBuilderComponent/>
+    <PatternBuilder/>
   )
 }

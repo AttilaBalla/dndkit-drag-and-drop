@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import {
   DndContext,
-  DragEndEvent,
   DragOverEvent,
   DragOverlay,
   DragStartEvent,
   KeyboardSensor,
   PointerSensor,
-  UniqueIdentifier,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
@@ -21,22 +19,29 @@ import {
 import styles from '../Styles';
 import { Item } from './Item';
 import { DragOverlayItem } from './OverlayItem';
-import { generateRandomHexCode } from '../utilities/patternBuilderUtils';
 import { Box, Slider, Typography } from '@mui/material';
-import { ItemEditorComponent } from './ItemEditorComponent';
+import { ItemEditor } from './ItemEditor';
+import { PatternItem } from '../../../types/patternbuilder/types';
+import {
+  initialColumnCount,
+  initialItems,
+} from '../utilities/patternBuilderUtils';
 
-const initialItems: string[] = [...Array(30).keys()].map(() =>
-  generateRandomHexCode()
-);
+export function PatternBuilder() {
+  const [items, setItems] = useState<PatternItem[]>(initialItems);
 
-export function PatternBuilderComponent() {
-  const [items, setItems] = useState<string[]>(initialItems);
+  const [activeItem, setActiveItem] = useState<PatternItem | undefined>(
+    undefined
+  );
+  const [columnCount, setColumnCount] = useState(initialColumnCount);
 
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const [columnCount, setColumnCount] = useState(32);
+  function addPatternItem(newItem: PatternItem) {
+    setItems((items) => [...items, newItem]);
+  }
 
   function handleDragStart(event: DragStartEvent) {
-    setActiveId(event.active.id);
+    const activeItem = items.find((item) => item.id === event.active.id);
+    setActiveItem(activeItem);
   }
 
   function handleDragOver(event: DragOverEvent) {
@@ -46,18 +51,37 @@ export function PatternBuilderComponent() {
       return;
     }
 
-    // Ensure ids are strings for arrayMove
-    setItems((items) =>
-      arrayMove(
-        items,
-        items.indexOf(String(active.id)),
-        items.indexOf(String(over.id))
-      )
-    );
+    const activeIndex = items.findIndex((item) => item.id === active.id);
+    const overIndex = items.findIndex((item) => item.id === over.id);
+
+    if (activeIndex !== -1 && overIndex !== -1) {
+      const newItems = arrayMove(items, activeIndex, overIndex);
+
+      setItems(newItems);
+    }
   }
 
-  function handleDragEnd({ active, over }: DragEndEvent) {
-    setActiveId(null);
+  function handleDragEnd() {
+    setActiveItem(undefined);
+  }
+
+  function reorganizeItemsBasedOnColumnCount(columnCount: number) {
+    let totalBeats = 0;
+    items.forEach((item) => {
+      totalBeats += item.beatCount;
+    });
+
+    if (totalBeats % columnCount === 0) {
+      console.log('nothing to do');
+      return;
+    }
+
+    const numberOfRows = Math.ceil(totalBeats / columnCount);
+    console.log(numberOfRows);
+
+    for (let i = 0; i < columnCount; i++) {
+      break;
+    }
   }
 
   const sensors = useSensors(
@@ -69,11 +93,11 @@ export function PatternBuilderComponent() {
 
   return (
     <>
-      <Box sx={{ mb: 4 }}>
+      <Box>
         <Typography>Beats / Row</Typography>
         <Slider
           aria-label="Temperature"
-          defaultValue={32}
+          defaultValue={initialColumnCount}
           valueLabelDisplay="auto"
           shiftStep={8}
           step={4}
@@ -90,10 +114,11 @@ export function PatternBuilderComponent() {
           min={8}
           max={64}
           onChange={(event: Event, value: number) => {
+            reorganizeItemsBasedOnColumnCount(Number(value));
             setColumnCount(Number(value));
           }}
         />
-        <ItemEditorComponent />
+        <ItemEditor addItem={addPatternItem} />
       </Box>
       <DndContext
         sensors={sensors}
@@ -108,14 +133,22 @@ export function PatternBuilderComponent() {
               gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
             }}
           >
-            {items.map((id) => (
-              <Item key={id} id={id} activeId={activeId} />
+            {items.map((item) => (
+              <Item key={item.id} item={item} />
             ))}
           </div>
         </SortableContext>
 
         <DragOverlay>
-          {activeId ? <DragOverlayItem id={String(activeId)} /> : null}
+          {activeItem ? (
+            <DragOverlayItem
+              id={activeItem.id}
+              text={activeItem.text}
+              type={activeItem.type}
+              activeId={activeItem?.id}
+              beatCount={activeItem.beatCount}
+            />
+          ) : null}
         </DragOverlay>
       </DndContext>
     </>

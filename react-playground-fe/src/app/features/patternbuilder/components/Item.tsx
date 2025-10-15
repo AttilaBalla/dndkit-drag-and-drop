@@ -1,25 +1,31 @@
-import { UniqueIdentifier } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
 import { motion } from 'framer-motion';
 import styles from '../Styles';
 import React from 'react';
 import { CSS } from '@dnd-kit/utilities';
+import { PatternItem } from '../../../types/patternbuilder/types';
+import { ItemContent } from './ItemContent';
+import { useTheme } from '@mui/material';
 
 interface IProps {
-  id: string,
-  activeId: UniqueIdentifier | null
+  item: PatternItem;
 }
 
 export function Item(props: IProps) {
-  const { id, activeId } = props;
+
+  const theme = useTheme();
+  const { id, activeId, type, text, beatCount } = props.item;
 
   const sortableHandler = useSortable({
-    id
+    id,
   });
 
   const sortableTransitionStyle: React.CSSProperties = {
     ...styles.cardStyles,
-    backgroundColor: id,
+    gridColumn: `span ${beatCount}`,
+    // calculate width based on beatCount (4rem per beat + 0.75rem gap for every gap in the grid)
+    width: `${4 * beatCount + (beatCount - 1) * 0.75}rem`,
+    backgroundColor: theme.palette.background.paper,
     transition: sortableHandler.transition,
     transform: sortableHandler.transform
       ? CSS.Transform.toString(sortableHandler.transform)
@@ -30,8 +36,8 @@ export function Item(props: IProps) {
     <motion.div
       layoutId={id}
       transition={{
-        type: "spring",
-        duration: activeId ? 0 : 0.6
+        type: 'spring',
+        duration: activeId ? 0 : 0.6,
       }}
       ref={sortableHandler.setNodeRef}
       style={sortableTransitionStyle}
@@ -39,7 +45,7 @@ export function Item(props: IProps) {
       {...sortableHandler.attributes}
       {...sortableHandler.listeners}
     >
-      {/* Content can go here if needed */}
+      <ItemContent item={props.item} />
     </motion.div>
   );
 }

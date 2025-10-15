@@ -6,8 +6,8 @@ const styles: { [style: string]: React.CSSProperties } = {
     gap: '.75rem',
   },
   cardStyles: {
-    width: "4rem",
     height: "4rem",
+    padding: ".5rem",
     position: "relative",
     background: "white",
     boxShadow: "0px 2px 4px rgba(0,0,0,0.15)",

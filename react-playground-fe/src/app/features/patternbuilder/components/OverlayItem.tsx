@@ -1,8 +1,11 @@
 import { useDndContext } from '@dnd-kit/core';
 import styles from '../Styles';
+import { PatternItem } from '../../../types/patternbuilder/types';
+import { useTheme } from '@mui/material';
 
-export function DragOverlayItem(props: { id: string }) {
-  const { id } = props;
+export function DragOverlayItem(props: PatternItem) {
+  const { id, type, text, beatCount } = props;
+  const theme = useTheme();
 
   const isReallyActive = useDndIsReallyActiveId(id);
 
@@ -10,11 +13,13 @@ export function DragOverlayItem(props: { id: string }) {
     <div
       style={{
         ...styles.cardStyles,
-        backgroundColor: id,
-        padding: 0,
+        backgroundColor: theme.palette.background.paper,
+        padding: '.5rem',
         transform: isReallyActive ? "scale(1.05)" : "none",
       }}
-    />
+    >
+      {text}
+    </div>
   );
 }
 

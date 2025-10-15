@@ -26,9 +26,11 @@ export function Item(props: IProps) {
   return (
     <Paper
       ref={sortableHandler.setNodeRef}
+      {...(canDrag ? sortableHandler.listeners : {})}
       {...sortableHandler.attributes}
       style={sortableTransitionStyle}
       sx={{
+        cursor: canDrag ? 'grab' : 'default',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -36,15 +38,12 @@ export function Item(props: IProps) {
         padding: '1rem',
         marginTop: '.5rem',
         marginBottom: '.5rem',
-        backgroundColor: theme.palette.grey[300],
+        backgroundColor: theme.palette.background.paper,
         boxSizing: 'border-box',
         width: '100%', // Ensures item matches container width
       }}
     >
       {component}
-      {canDrag ? (
-        <ItemHandle listeners={{ ...sortableHandler.listeners }} />
-      ) : null}
     </Paper>
   );
 }
