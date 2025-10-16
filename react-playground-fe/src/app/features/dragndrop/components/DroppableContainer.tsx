@@ -18,13 +18,14 @@ export function DroppableContainer(props: IProps) {
   const { setNodeRef } = useDroppable({ id });
 
   return (
-    <Box ref={setNodeRef}
+    <Box
+      ref={setNodeRef}
       sx={{
         flex: ratio,
         border: canDrag ? '1px solid blue' : '1px solid lightgrey',
         borderRadius: '4px',
         padding: '.5rem',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
       }}
     >
       <SortableContext items={items} strategy={rectSortingStrategy}>

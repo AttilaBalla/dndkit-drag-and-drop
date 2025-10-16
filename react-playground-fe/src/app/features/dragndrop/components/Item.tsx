@@ -12,7 +12,7 @@ interface IProps {
 
 export function Item(props: IProps) {
   const theme = useTheme();
-  const { id, component, canDrag} = props;
+  const { id, component, canDrag } = props;
   const sortableHandler = useSortable({ id });
 
   const sortableTransitionStyle: React.CSSProperties = {

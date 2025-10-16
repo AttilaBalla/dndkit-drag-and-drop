@@ -57,7 +57,7 @@ export function findComponentBasedOnId(
     const result = container.items.find((item) => {
       return item.id === itemId;
     })?.component;
-    if(result) {
+    if (result) {
       component = result;
     }
   });
