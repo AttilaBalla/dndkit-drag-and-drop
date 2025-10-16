@@ -52,7 +52,6 @@ export function DragAndDropComponent(props: IProps) {
   );
 
   function toggleLayoutPreset(layout: number[]) {
-    console.log('changing layout');
     const newContainerLayout = createInitialLayout(layout);
 
     if (newContainerLayout.length !== containers.length) {
