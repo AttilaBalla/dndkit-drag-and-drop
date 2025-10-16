@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
-  closestCorners,
   DndContext,
+  DragOverlay,
   DragEndEvent,
   DragMoveEvent,
   DragOverEvent,
@@ -9,6 +9,7 @@ import {
   UniqueIdentifier,
   useSensor,
   useSensors,
+  closestCorners,
 } from '@dnd-kit/core';
 import { DroppableContainer } from './DroppableContainer';
 import {
@@ -16,14 +17,16 @@ import {
   DragAndDropContainer,
   DragAndDropContainerLayouts,
 } from '../../../types/dragndrop/types';
-import { Box, Stack } from '@mui/material';
+import { Box, Paper, Stack } from '@mui/material';
 import { arrayMove } from '@dnd-kit/sortable';
 import Button from '@mui/material/Button';
 import {
   createInitialLayout,
   createLayoutWithComponents,
   findContainerId,
+  findComponentBasedOnId,
 } from '../utilities/dragAndDropUtils';
+import { theme } from '../../../../theme';
 
 interface IProps {
   canChangeLayout: boolean;
@@ -49,8 +52,8 @@ export function DragAndDropComponent(props: IProps) {
   );
 
   function toggleLayoutPreset(layout: number[]) {
-    console.log('changing layout')
-    const newContainerLayout = createInitialLayout(layout)
+    console.log('changing layout');
+    const newContainerLayout = createInitialLayout(layout);
 
     if (newContainerLayout.length !== containers.length) {
       // If the number of containers is changing, we need to redistribute items
@@ -295,6 +298,24 @@ export function DragAndDropComponent(props: IProps) {
             );
           })}
         </Box>
+        <DragOverlay>
+          <Paper
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              minHeight: '5rem',
+              padding: '1rem',
+              marginTop: '.5rem',
+              marginBottom: '.5rem',
+              backgroundColor: theme.palette.background.paper,
+              boxSizing: 'border-box',
+              width: '100%', // Ensures item matches container width
+            }}
+          >
+            {activeId ? findComponentBasedOnId(activeId, containers) : null}
+          </Paper>
+        </DragOverlay>
       </DndContext>
     </>
   );

@@ -30,19 +30,19 @@ export function DragAndDropPage() {
         components={[
           {
             containerId: 1,
-            component: <ExampleComponent text={'this is a component here'} />,
+            component: <ExampleComponent text={'this is 1 component here'} />,
           },
           {
             containerId: 1,
-            component: <ExampleComponent text={'this is a component here'} />,
+            component: <ExampleComponent text={'this is a 2nd component here'} />,
           },
           {
             containerId: 2,
-            component: <ExampleComponent text={'this is a component here'} />,
+            component: <ExampleComponent text={'this is 3rd component here'} />,
           },
           {
             containerId: 2,
-            component: <ExampleComponent text={'this is a component here'} />,
+            component: <ExampleComponent text={'this is 4th component here'} />,
           },
         ]}
         canChangeLayout={canChangeLayout}

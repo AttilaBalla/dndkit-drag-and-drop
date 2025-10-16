@@ -3,6 +3,7 @@ import {
   DragAndDropComponentList,
   DragAndDropContainer,
 } from '../../../types/dragndrop/types';
+import { ReactNode } from 'react';
 
 export function findContainerId(
   containers: DragAndDropContainer[],
@@ -31,15 +32,35 @@ export function createLayoutWithComponents(
   const containers = createInitialLayout(layout);
 
   for (const item of components) {
-    const container = containers.find(c => c.id === item.containerId);
+    const container = containers.find((c) => c.id === item.containerId);
     if (!container) {
-      throw new Error(`Container with id ${item.containerId} does not exist in layout`);
+      throw new Error(
+        `Container with id ${item.containerId} does not exist in layout`
+      );
     }
     container.items.push({
       id: crypto.randomUUID(),
-      component: item.component
+      component: item.component,
     });
   }
 
   return containers;
+}
+
+export function findComponentBasedOnId(
+  itemId: UniqueIdentifier,
+  containers: DragAndDropContainer[]
+): ReactNode {
+  let component: ReactNode = null;
+
+  containers.forEach((container) => {
+    const result = container.items.find((item) => {
+      return item.id === itemId;
+    })?.component;
+    if(result) {
+      component = result;
+    }
+  });
+
+  return component;
 }

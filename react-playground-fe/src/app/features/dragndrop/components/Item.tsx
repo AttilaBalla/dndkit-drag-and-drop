@@ -2,7 +2,6 @@ import { Paper, useTheme } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import React, { ReactNode } from 'react';
-import { ItemHandle } from './ItemHandle';
 import { UniqueIdentifier } from '@dnd-kit/core';
 
 interface IProps {
@@ -13,7 +12,7 @@ interface IProps {
 
 export function Item(props: IProps) {
   const theme = useTheme();
-  const { id, component, canDrag } = props;
+  const { id, component, canDrag} = props;
   const sortableHandler = useSortable({ id });
 
   const sortableTransitionStyle: React.CSSProperties = {
@@ -30,6 +29,7 @@ export function Item(props: IProps) {
       {...sortableHandler.attributes}
       style={sortableTransitionStyle}
       sx={{
+        opacity: sortableHandler.isDragging ? 0.5 : 1,
         cursor: canDrag ? 'grab' : 'default',
         display: 'flex',
         justifyContent: 'space-between',
